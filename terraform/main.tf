@@ -1,8 +1,3 @@
-variable "project_id" {
-  type        = string
-  description = "Your Scaleway project ID."
-}
-
 output "server_ip_address" {
     value = "${scaleway_instance_ip.public_ip.address}"
 }
@@ -14,11 +9,28 @@ terraform {
     }
   }
   required_version = ">= 0.13"
+
+  backend "s3" {
+    bucket                      = "homeopath-terraform-states"
+    key                         = "homeopath-supabase.tfstate"
+    region                      = "fr-par"
+    endpoints = {
+      s3 = "https://s3.fr-par.scw.cloud"
+    }
+    skip_credentials_validation = true
+    skip_region_validation      = true
+    skip_requesting_account_id  = true
+  }
 }
 
 provider "scaleway" {
-  zone   = "pl-waw-2"
-  region = "pl-waw"
+  zone   = "fr-par-1"
+  region = "fr-par"
+
+  access_key = var.scw_access_key
+  secret_key = var.scw_secret_key
+
+  project_id = var.project_id
 }
 
 resource "scaleway_instance_ip" "public_ip" {
@@ -27,7 +39,7 @@ resource "scaleway_instance_ip" "public_ip" {
 
 resource "scaleway_instance_volume" "data" {
   project_id = var.project_id
-  size_in_gb = 10
+  size_in_gb = 20
   type       = "b_ssd"
 }
 
@@ -38,7 +50,7 @@ resource "scaleway_instance_server" "web" {
 
   name = "supabase-deployment-testing"
 
-  tags = ["tests"]
+  tags = []
 
   ip_id = scaleway_instance_ip.public_ip.id
 
