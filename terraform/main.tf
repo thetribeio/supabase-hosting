@@ -48,7 +48,7 @@ resource "scaleway_instance_server" "web" {
   type       = "STARDUST1-S"
   image      = "ubuntu_noble"
 
-  name = "supabase-deployment-testing"
+  name = "supabase"
 
   tags = []
 
