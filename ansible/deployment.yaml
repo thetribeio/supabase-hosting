@@ -1,0 +1,73 @@
+---
+- name: Deploy docker-compose
+  hosts: prod
+
+  tasks:
+    - name: Install docker using the `roles/ansible-role-docker` role
+      ansible.builtin.include_role:
+        name: roles/ansible-role-docker
+
+    - name: Create necessary dirs
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: directory
+      loop:
+        - path: "/app"
+        - path: "/app/volumes"
+        - path: "/app/volumes/api"
+        - path: "/app/volumes/db"
+        - path: "/app/volumes/db/data"
+        - path: "/app/volumes/db/init"
+        - path: "/app/volumes/functions"
+        - path: "/app/volumes/logs"
+        - path: "/app/volumes/pooler"
+        - path: "/app/volumes/storage"
+        - path: "/etc/vector/"
+
+    - name: Copy necessary files
+      ansible.builtin.copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+      loop:
+        - src: "../docker-compose.yaml"
+          dest: "/app/docker-compose.yaml"
+        - src: "../docker-compose.s3.yaml"
+          dest: "/app/docker-compose.s3.yaml"
+        - src: "../.env"
+          dest: "/app/.env"
+        - src: "../volumes/api/kong.yml"
+          dest: "/app/volumes/api/kong.yml"
+        - src: "../volumes/functions"
+          dest: "/app/volumes/"
+        - src: "../volumes/logs"
+          dest: "/app/volumes/"
+        - src: "../volumes/pooler"
+          dest: "/app/volumes/"
+
+    - name: Copy database files
+      ansible.builtin.copy:
+        src: "../volumes/db/{{ item.name }}"
+        dest: "/app/volumes/db/{{ item.name }}"
+      loop:
+        - name: "_supabase.sql"
+        - name: "jwt.sql"
+        - name: "logs.sql"
+        - name: "pooler.sql"
+        - name: "realtime.sql"
+        - name: "roles.sql"
+        - name: "webhooks.sql"
+        - name: "init/data.sql"
+
+    - name: Deploy services with docker-compose
+      community.docker.docker_compose_v2:
+        project_name: supabase
+        project_src: "/app/"
+        files:
+          - docker-compose.yaml
+          - docker-compose.s3.yaml
+        state: present
+      register: output
+
+    - name: Show docker-compose output
+      ansible.builtin.debug:
+        var: output
