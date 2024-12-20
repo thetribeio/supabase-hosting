@@ -1,5 +1,6 @@
 [servers]
-prod ansible_host=51.158.119.100 ansible_user=root
+staging ansible_host=1.2.3.4 ansible_user=root
+prod    ansible_host=1.2.3.4 ansible_user=root
 
 [all:vars]
 ansible_python_interpreter=/usr/bin/python3

@@ -7,7 +7,7 @@ plugins:
       account_email: devs@thetribe.io
       tos_accepted: true
       domains:
-        - dashboard.homeopath.thestaging.io
+        - your-domain-name.com
 
 ###
 ### Consumers / Users

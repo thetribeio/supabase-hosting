@@ -1,6 +1,6 @@
 ---
 - name: Deploy docker-compose
-  hosts: prod
+  hosts: staging,prod
 
   tasks:
     - name: Install docker using the `roles/ansible-role-docker` role
