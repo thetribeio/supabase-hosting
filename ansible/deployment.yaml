@@ -7,6 +7,14 @@
       ansible.builtin.include_role:
         name: roles/ansible-role-docker
 
+    - name: Install certbot
+      ansible.builtin.include_role:
+        name: roles/ansible-role-certbot
+      vars:
+        certbot_install_method: package
+        certbot_create_if_missing: true
+        certbot_admin_email: "devs@thetribe.io"
+
     - name: Create necessary dirs
       ansible.builtin.file:
         path: "{{ item.path }}"
