@@ -1,0 +1,14 @@
+[Unit]
+Description=Supabase docker-compose containers
+After=docker.service
+Requires=docker.service
+
+[Service]
+WorkingDirectory=/app/
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=docker compose -f /app/docker-compose.yaml up --detach
+ExecStop=docker compose -f /app/docker-compose.yaml stop
+
+[Install]
+WantedBy=multi-user.target

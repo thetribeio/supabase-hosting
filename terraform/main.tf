@@ -37,12 +37,12 @@ resource "scaleway_instance_ip" "public_ip" {
   project_id = var.project_id
 }
 
-resource "scaleway_instance_server" "web" {
+resource "scaleway_instance_server" "production_server" {
   project_id = var.project_id
-  type       = "DEV1-M"
+  type       = "PRO2-XXS"
   image      = "ubuntu_noble"
 
-  name = "supabase"
+  name = "supabase-dashboard-prod"
 
   tags = []
 
@@ -51,7 +51,7 @@ resource "scaleway_instance_server" "web" {
   additional_volume_ids = []
 
   root_volume {
-    size_in_gb = 30
+    size_in_gb = 50
   }
 }
 

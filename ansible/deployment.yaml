@@ -39,8 +39,6 @@
       loop:
         - src: "../docker-compose.yaml"
           dest: "/app/docker-compose.yaml"
-        - src: "../docker-compose.s3.yaml"
-          dest: "/app/docker-compose.s3.yaml"
         - src: "../.env"
           dest: "/app/.env"
         - src: "../volumes/api/kong.yml"
@@ -66,16 +64,17 @@
         - name: "webhooks.sql"
         - name: "init/data.sql"
 
-    - name: Deploy services with docker-compose
-      community.docker.docker_compose_v2:
-        project_name: supabase
-        project_src: "/app/"
-        files:
-          - docker-compose.yaml
-          - docker-compose.s3.yaml
-        state: present
-      register: output
+    - name: Copy the docker-compose.service systemd file
+      ansible.builtin.template:
+        src: ./templates/docker-compose.service.j2
+        dest: /etc/systemd/system/supabase-docker-compose.service
 
-    - name: Show docker-compose output
-      ansible.builtin.debug:
-        var: output
+    - name: Reload systemd services
+      ansible.builtin.systemd_service:
+        state: reloaded
+
+    - name: Start the newly-described service
+      ansible.builtin.systemd_service:
+        name: supabase-docker-compose
+        enabled: true
+        state: restart

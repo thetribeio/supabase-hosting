@@ -1,3 +1,4 @@
 *
 !.gitignore
 !kong.yml
+!kong-local.yml
